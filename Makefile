@@ -8,11 +8,15 @@ docker-build:
 	docker build -t toolazy .
 
 docker-build-ui:
-	docker run --rm -v `pwd`/ui:/usr/src/ui node:8 /bin/sh -c \
+	docker run --rm -ti -v `pwd`/ui:/usr/src/ui node:8 /bin/sh -c \
 		"cd /usr/src/ui \
 		&& npm run build"
-	mkdir -p ./app/public
-	cp -R ./ui/build/ ./app/public/
+	mkdir -p ./app/static
+	cp -R ./ui/build/* ./app/static
+	mv ./app/static/static/js ./app/static/js
+	mv ./app/static/static/css ./app/static/css
+	mv ./app/static/static/media ./app/static/media
+	rm -rf ./app/static/static
 
 docker-install:
 	docker run --rm -v `pwd`/app:/usr/src/app python:3 /bin/sh -c \

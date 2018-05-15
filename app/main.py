@@ -1,11 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
+from controllers.static import static_route
 from controllers.status import status_route
 from controllers.summarize import summarize_route
 from flask import Flask
 
 def get_app():
-    application = Flask("too_lazy")
+    application = Flask("too_lazy", static_url_path='')
 
     routes = [
         status_route,
@@ -13,6 +14,8 @@ def get_app():
     ]
     for route in routes:
         application.register_blueprint(route, url_prefix='/api')
+    
+    application.register_blueprint(static_route)
 
     return application
 
