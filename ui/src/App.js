@@ -14,13 +14,25 @@ import axios from 'axios';
 
 const Summary = (props) => {
   let content = [];
+  let currentSize = 0;
 
   if (props.data.summary) {
-    content = props.data.summary.map((line, index) => (
-      <p key={`sumline_${index}`}>
-        {line}
-      </p>
-    ));
+    content = props.data.summary.map((line, index) => {
+      currentSize += line.length;
+
+      return (
+        <p key={`sumline_${index}`}>
+          {line}
+        </p>
+      );
+    });
+  }
+
+  let reduction = 0;
+
+  if (currentSize < props.originalSize) {
+    reduction = (props.originalSize - currentSize) / props.originalSize * 100;
+    reduction = Math.round(reduction);
   }
 
   return (
@@ -31,6 +43,18 @@ const Summary = (props) => {
       <Panel.Body>
         {content}
       </Panel.Body>
+      <Panel.Footer>
+        <Grid fluid>
+          <Row>
+            <Col xs={6}>
+              <p className="text-center">Reduced by: {reduction}%</p>
+            </Col>
+            <Col xs={6}>
+              <p className="text-center">Size: {currentSize} characters</p>
+            </Col>
+          </Row>
+        </Grid>
+      </Panel.Footer>
     </Panel>
   );
 };
@@ -65,6 +89,7 @@ class UserInput extends Component {
           <ControlLabel>Article</ControlLabel>
           <FormControl
             componentClass="textarea"
+            rows="8"
             placeholder={placeholder}
             value={this.state.textVal}
             onChange={(e) => this.updateText(e)}/>
@@ -85,18 +110,24 @@ class App extends Component {
     super(props);
 
     this.state = {
-      summary: ''
+      summary: '',
+      totalSize: 0
     };
   }
 
   async submitArticle(text) {
-    try {
-      const summary = await axios.post('/api/summarize', { data: text });
+    let summary = { data: { lines: 0, summary: [] } };
 
-      this.setState({ summary: summary.data });
+    try {
+      summary = await axios.post('/api/summarize', { data: text });
     } catch(e) {
       console.error(`Error encountered while sending text to summary API: ${JSON.stringify(e)}`);
     }
+
+    this.setState({
+      summary: summary.data.data,
+      totalSize: text.length
+    });
   }
 
   render() {
@@ -112,12 +143,12 @@ class App extends Component {
         </Row>
         <Row>
           <Col md={8} mdOffset={2}>
-            <UserInput submitArticle={this.submitArticle.bind(this)}/>
+            <UserInput submitArticle={(text) => this.submitArticle(text)}/>
           </Col>
         </Row>
         <Row style={spacing}>
           <Col md={8} mdOffset={2} style={hideSummary}>
-            <Summary data={this.state.summary}/>
+            <Summary data={this.state.summary} originalSize={this.state.totalSize}/>
           </Col>
         </Row>
       </Grid>
