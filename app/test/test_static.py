@@ -33,7 +33,7 @@ class StaticFileTest(unittest.TestCase):
         target_files = self.test_files['js']
 
         for target_file in target_files:
-            endpoint = '/public/js/{0}'.format(target_file)
+            endpoint = '/static/js/{0}'.format(target_file)
         
             response = self.app.get(endpoint)
 
@@ -43,7 +43,7 @@ class StaticFileTest(unittest.TestCase):
         target_files = self.test_files['css']
 
         for target_file in target_files:
-            endpoint = '/public/css/{0}'.format(target_file)
+            endpoint = '/static/css/{0}'.format(target_file)
         
             response = self.app.get(endpoint)
 
@@ -53,10 +53,8 @@ class StaticFileTest(unittest.TestCase):
         target_files = self.test_files['media']
 
         for target_file in target_files:
-            endpoint = '/public/media/{0}'.format(target_file)
+            endpoint = '/static/media/{0}'.format(target_file)
         
             response = self.app.get(endpoint)
 
             self.assertEqual(response.status_code, 200)
-    
-    
