@@ -13,9 +13,12 @@ docker-build-ui:
 		&& npm run build"
 	mkdir -p ./app/static
 	cp -R ./ui/build/* ./app/static
-	mv ./app/static/static/js ./app/static/js
-	mv ./app/static/static/css ./app/static/css
-	mv ./app/static/static/media ./app/static/media
+	mkdir -p ./app/static/js
+	mkdir -p ./app/static/css
+	mkdir -p ./app/static/media
+	mv ./app/static/static/js/* ./app/static/js/
+	mv ./app/static/static/css/* ./app/static/css/
+	mv ./app/static/static/media/* ./app/static/media/
 	rm -rf ./app/static/static
 
 docker-install:
